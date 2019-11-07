@@ -1,5 +1,7 @@
 package com.example.pizzarecipes;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,9 +16,11 @@ import java.util.ArrayList;
 public class PizzaRecipeAdapter extends RecyclerView.Adapter<PizzaRecipeAdapter.PizzaRecipeViewHolder> {
 
     ArrayList<PizzaRecipeItem> pizzaRecipeItems;
+    Context context;//создаем т к у нас не активити а класс, для передачи в интенте нужен
 
-    public PizzaRecipeAdapter(ArrayList<PizzaRecipeItem> pizzaRecipeItems){
+    public PizzaRecipeAdapter(ArrayList<PizzaRecipeItem> pizzaRecipeItems, Context context){
         this.pizzaRecipeItems = pizzaRecipeItems;
+        this.context = context;
     }
 
     @NonNull
@@ -43,7 +47,7 @@ public class PizzaRecipeAdapter extends RecyclerView.Adapter<PizzaRecipeAdapter.
         return pizzaRecipeItems.size();
     }
 
-    public static class PizzaRecipeViewHolder extends RecyclerView.ViewHolder{
+     class PizzaRecipeViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public ImageView pizzaImageView;
         public TextView title;
@@ -51,10 +55,26 @@ public class PizzaRecipeAdapter extends RecyclerView.Adapter<PizzaRecipeAdapter.
 
         public PizzaRecipeViewHolder(@NonNull View itemView) {
             super(itemView);
+            itemView.setOnClickListener(this);
 
             pizzaImageView = itemView.findViewById(R.id.pizzaImageView);
             title = itemView.findViewById(R.id.titleTextView);
             description = itemView.findViewById(R.id.descriptionImageView);
+        }
+
+        @Override
+        public void onClick(View view) {
+
+            int position = getAdapterPosition();//получаем позицию эл-та, чтобы потом передать его
+            PizzaRecipeItem pizzaRecipeItem = pizzaRecipeItems.get(position);
+
+          // при помощи геттеров получаем всю информацию PizzaRecipeItem, чтобы потом передать
+            Intent intent = new Intent(context,RecipeActivity.class);
+            intent.putExtra("imageResource", pizzaRecipeItem.getImageResource());//ключ - значение
+            intent.putExtra("title", pizzaRecipeItem.getTitle());
+            intent.putExtra("description", pizzaRecipeItem.getDescription());
+            intent.putExtra("recipe", pizzaRecipeItem.getRecipe());
+            context.startActivity(intent);
         }
     }
 }
